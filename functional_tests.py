@@ -41,7 +41,8 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element_by_id('id_table')
         rows = self.browser.find_elements_by_tag_name('tr')
         self.assertTrue(
-            any(row.text == '1、早读时，因为声音响亮，得到老师的表扬。' for row in rows)
+            any(row.text == '1、早读时，因为声音响亮，得到老师的表扬。' for row in rows),
+            '新输入的记录没有出现在表格中！'
         )
 
         # 他继续在页面的文本框中输入第二条成长记录：
