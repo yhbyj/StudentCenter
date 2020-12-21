@@ -1,5 +1,9 @@
+import time
+
 from selenium import webdriver
 import unittest
+
+from selenium.webdriver.common.keys import Keys
 
 
 class NewVisitorTest(unittest.TestCase):
@@ -17,17 +21,32 @@ class NewVisitorTest(unittest.TestCase):
 
         # 他注意到页标题和头部包含“成长记录”信息。
         self.assertIn('成长记录', self.browser.title)
-        self.fail('测试结束！')
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('成长记录', header_text)
 
         # 他被邀请直接输入一条成长记录信息。
+        inputbox = self.browser.find_element_by_id('id_new_record')
+        self.assertEqual(
+            inputbox.get_attribute('placeholder'),
+            '输入一条成长记录'
+        )
 
         # 他在文本框中，输入“早读时，因为声音响亮，得到老师的表扬。”
+        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
 
         # 当他敲了回车键后，页面自动更新，页面中出现：
         # “1、早读时，因为声音响亮，得到老师的表扬。”
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(1)
+        table = self.browser.find_element_by_id('id_table')
+        rows = self.browser.find_elements_by_tag_name('tr')
+        self.assertTrue(
+            any(row.text == '1、早读时，因为声音响亮，得到老师的表扬。' for row in rows)
+        )
 
         # 他继续在页面的文本框中输入第二条成长记录：
         # “中午读写唱时，因为迟到，受到班主任的批评。”
+        self.fail('测试结束！')
 
         # 当他敲了回车键后，页面再次自动更新，
         # 页面中同时出现两条他输入的带编号的记录。
