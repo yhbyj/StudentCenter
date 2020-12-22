@@ -1,12 +1,12 @@
 import time
 
+from django.test import LiveServerTestCase
 from selenium import webdriver
-import unittest
 
 from selenium.webdriver.common.keys import Keys
 
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self) -> None:
         self.browser = webdriver.Firefox()
@@ -22,7 +22,7 @@ class NewVisitorTest(unittest.TestCase):
     def test_can_start_a_record_list_and_retrieve_it_later(self):
         # 张三（San Zhang）听说一个记录成长经历的应用。
         # 他来查实该应用的首页。
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # 他注意到页标题和头部包含“成长记录”信息。
         self.assertIn('成长记录', self.browser.title)
@@ -72,6 +72,3 @@ class NewVisitorTest(unittest.TestCase):
 
         # 他心满意足，回去睡觉了。
 
-
-if __name__ == '__main__':
-    unittest.main()
