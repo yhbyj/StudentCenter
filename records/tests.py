@@ -27,18 +27,14 @@ class HomePageTest(TestCase):
             data={'record_text': '一条新的成长记录'}
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(
+            response['location'],
+            '/packs/the-only-record-in-the-world/'
+        )
 
     def test_cant_save_record_after_GET(self):
         self.client.get('/')
         self.assertEqual(Record.objects.count(), 0)
-
-    def test_can_display_saved_records(self):
-        record_1 = Record.objects.create(text='记录1')
-        record_2 = Record.objects.create(text='记录2')
-        response = self.client.get('/')
-        self.assertIn('记录1', response.content.decode())
-        self.assertIn('记录2', response.content.decode())
 
 
 class RecordModelTest(TestCase):
@@ -59,3 +55,25 @@ class RecordModelTest(TestCase):
         second_saved_record = saved_records[1]
         self.assertEqual(first_saved_record.text, '第一条记录')
         self.assertEqual(second_saved_record.text, '第二条记录')
+
+
+class PackViewTest(TestCase):
+
+    def test_can_use_pack_template(self):
+        response = self.client.get(
+            '/packs/the-only-record-in-the-world/'
+        )
+
+        self.assertTemplateUsed(response, 'pack.html')
+
+    def test_can_display_all_saved_records(self):
+        Record.objects.create(text='记录1')
+        Record.objects.create(text='记录2')
+
+        response = self.client.get(
+            '/packs/the-only-record-in-the-world/'
+        )
+
+        self.assertContains(response, '记录1')
+        self.assertContains(response, '记录2')
+

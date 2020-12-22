@@ -8,5 +8,10 @@
                 <input name="record_text" id="id_new_record" placeholder="输入一条成长记录">
                 {% csrf_token %}
             </form>
+        <table id="id_table">
+            {% for record in records %}
+                <tr><td>{{ forloop.counter }}、{{ record.text }}</td></tr>
+            {% endfor %}
+        </table>
     </body>
 </html>
