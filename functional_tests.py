@@ -40,20 +40,34 @@ class NewVisitorTest(unittest.TestCase):
         time.sleep(1)
         table = self.browser.find_element_by_id('id_table')
         rows = self.browser.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == '1、早读时，因为声音响亮，得到老师的表扬。' for row in rows),
-            '新输入的记录没有出现在表格中！'
+        self.assertIn(
+            '1、早读时，因为声音响亮，得到老师的表扬。',
+            [row.text for row in rows]
         )
 
         # 他继续在页面的文本框中输入第二条成长记录：
         # “中午读写唱时，因为迟到，受到班主任的批评。”
-        self.fail('测试结束！')
+        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox.send_keys('中午读写唱时，因为迟到，受到班主任的批评。')
 
         # 当他敲了回车键后，页面再次自动更新，
         # 页面中同时出现两条他输入的带编号的记录。
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(1)
+        table = self.browser.find_element_by_id('id_table')
+        rows = self.browser.find_elements_by_tag_name('tr')
+        self.assertIn(
+            '1、早读时，因为声音响亮，得到老师的表扬。',
+            [row.text for row in rows]
+        )
+        self.assertIn(
+            '2、中午读写唱时，因为迟到，受到班主任的批评。',
+            [row.text for row in rows]
+        )
 
         # 他好奇这个网站能不能记住他所输入的记录。
         # 他发现该网站为他生成了一条唯一的URL地址。
+        self.fail('测试结束！')
 
         # 他访问了该URL地址。
         # 他录入的信息还在那儿。
