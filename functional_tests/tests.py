@@ -31,7 +31,7 @@ class NewVisitorTest(LiveServerTestCase):
                     raise e
                 time.sleep(0.5)
 
-    def test_can_start_a_record_list_and_retrieve_it_later(self):
+    def test_can_start_a_pack_of_records_for_one_user(self):
         # 张三（San Zhang）听说一个记录成长经历的应用。
         # 他来查实该应用的首页。
         self.browser.get(self.live_server_url)
@@ -58,6 +58,7 @@ class NewVisitorTest(LiveServerTestCase):
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
 
+        # 他好奇这个网站能不能记住他所输入的记录。
         # 他继续在页面的文本框中输入第二条成长记录：
         # “中午读写唱时，因为迟到，受到班主任的批评。”
         inputbox = self.browser.find_element_by_id('id_new_record')
@@ -73,12 +74,50 @@ class NewVisitorTest(LiveServerTestCase):
             '2、中午读写唱时，因为迟到，受到班主任的批评。'
         )
 
-        # 他好奇这个网站能不能记住他所输入的记录。
+        # 他心满意足，出去玩了！
+
+    def test_multiple_users_can_start_packs_at_different_urls(self):
+        # 张三（San Zhang）开始一个新的记录包（集）
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_text_in_table(
+            '1、早读时，因为声音响亮，得到老师的表扬。'
+        )
+
         # 他发现该网站为他生成了一条唯一的URL地址。
-        self.fail('测试结束！')
+        san_pack_url = self.browser.current_url
+        self.assertRegex(san_pack_url, '/packs/.+')
 
-        # 他访问了该URL地址。
-        # 他录入的信息还在那儿。
+        # 现在有一个新的用户，李四（Si Li），也来访问该网站。
 
-        # 他心满意足，回去睡觉了。
+        # 我们使用一个新的会话，确保不出现包含在cookies里的张三的信息。
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        # 李四访问首页。没有张三的记录包信息
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('早读时，因为声音响亮，得到老师的表扬。', page_text)
+        self.assertNotIn('中午读写唱时，因为迟到，受到班主任的批评。', page_text)
+
+        # 李四开始一个新的记录包
+        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox.send_keys('晚自修时，我写了2000字的作文，非常开心！')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_text_in_table(
+            '1、晚自修时，我写了2000字的作文，非常开心！'
+        )
+
+        # 李四也得到了一条唯一的URL地址。
+        si_pack_url = self.browser.current_url
+        self.assertRegex(si_pack_url, '/packs/.+')
+
+        # 还是没有张三的记录包信息
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('早读时，因为声音响亮，得到老师的表扬。', page_text)
+        self.assertNotIn('中午读写唱时，因为迟到，受到班主任的批评。', page_text)
+
+        # 他们心满意足，出去玩了！
 
