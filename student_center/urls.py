@@ -20,5 +20,6 @@ from records import views
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', views.home_page, name='home'),
+    path('packs/new', views.new_pack, name='new_pack'),
     path('packs/the-only-record-in-the-world/', views.view_pack, name='view_pack'),
 ]

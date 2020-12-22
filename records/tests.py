@@ -11,31 +11,6 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
-    def test_can_POST_a_request_and_save_record(self):
-        response = self.client.post(
-            '/',
-            data={'record_text': '一条新的成长记录'}
-        )
-
-        self.assertEqual(Record.objects.count(), 1)
-        new_record = Record.objects.first()
-        self.assertEqual(new_record.text, '一条新的成长记录')
-
-    def test_can_redirect_after_POST(self):
-        response = self.client.post(
-            '/',
-            data={'record_text': '一条新的成长记录'}
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response['location'],
-            '/packs/the-only-record-in-the-world/'
-        )
-
-    def test_cant_save_record_after_GET(self):
-        self.client.get('/')
-        self.assertEqual(Record.objects.count(), 0)
-
 
 class RecordModelTest(TestCase):
 
@@ -77,3 +52,27 @@ class PackViewTest(TestCase):
         self.assertContains(response, '记录1')
         self.assertContains(response, '记录2')
 
+
+class NewPackTest(TestCase):
+
+    def test_can_POST_a_request_and_save_record(self):
+        response = self.client.post(
+            '/packs/new',
+            data={'record_text': '一条新的成长记录'}
+        )
+
+        self.assertEqual(Record.objects.count(), 1)
+        new_record = Record.objects.first()
+        self.assertEqual(new_record.text, '一条新的成长记录')
+
+    def test_can_redirect_after_POST(self):
+        response = self.client.post(
+            '/packs/new',
+            data={'record_text': '一条新的成长记录'}
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            '/packs/the-only-record-in-the-world/'
+        )
