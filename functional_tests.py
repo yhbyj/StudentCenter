@@ -14,6 +14,11 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.browser.quit()
 
+    def check_for_row_text_in_table(self, row_text):
+        table = self.browser.find_element_by_id('id_table')
+        rows = self.browser.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     def test_can_start_a_record_list_and_retrieve_it_later(self):
         # 张三（San Zhang）听说一个记录成长经历的应用。
         # 他来查实该应用的首页。
@@ -38,11 +43,8 @@ class NewVisitorTest(unittest.TestCase):
         # “1、早读时，因为声音响亮，得到老师的表扬。”
         inputbox.send_keys(Keys.ENTER)
         time.sleep(1)
-        table = self.browser.find_element_by_id('id_table')
-        rows = self.browser.find_elements_by_tag_name('tr')
-        self.assertIn(
-            '1、早读时，因为声音响亮，得到老师的表扬。',
-            [row.text for row in rows]
+        self.check_for_row_text_in_table(
+            '1、早读时，因为声音响亮，得到老师的表扬。'
         )
 
         # 他继续在页面的文本框中输入第二条成长记录：
@@ -54,15 +56,11 @@ class NewVisitorTest(unittest.TestCase):
         # 页面中同时出现两条他输入的带编号的记录。
         inputbox.send_keys(Keys.ENTER)
         time.sleep(1)
-        table = self.browser.find_element_by_id('id_table')
-        rows = self.browser.find_elements_by_tag_name('tr')
-        self.assertIn(
-            '1、早读时，因为声音响亮，得到老师的表扬。',
-            [row.text for row in rows]
+        self.check_for_row_text_in_table(
+            '1、早读时，因为声音响亮，得到老师的表扬。'
         )
-        self.assertIn(
-            '2、中午读写唱时，因为迟到，受到班主任的批评。',
-            [row.text for row in rows]
+        self.check_for_row_text_in_table(
+            '2、中午读写唱时，因为迟到，受到班主任的批评。'
         )
 
         # 他好奇这个网站能不能记住他所输入的记录。
