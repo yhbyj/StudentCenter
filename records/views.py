@@ -8,8 +8,9 @@ def home_page(request):
     return render(request, 'home.html')
 
 
-def view_pack(request):
-    records = Record.objects.all()
+def view_pack(request, pack_id):
+    pack = Pack.objects.get(id=pack_id)
+    records = Record.objects.filter(pack=pack)
     return render(request, 'pack.html', {'records': records})
 
 
@@ -19,4 +20,4 @@ def new_pack(request):
         text=request.POST['record_text'],
         pack=pack
     )
-    return redirect('/packs/the-only-record-in-the-world/')
+    return redirect(f'/packs/{pack.id}/')

@@ -41,23 +41,30 @@ class PackAndRecordModelTest(TestCase):
 class PackViewTest(TestCase):
 
     def test_can_use_pack_template(self):
+        pack = Pack.objects.create()
         response = self.client.get(
-            '/packs/the-only-record-in-the-world/'
+            f'/packs/{pack.id}/'
         )
 
         self.assertTemplateUsed(response, 'pack.html')
 
-    def test_can_display_all_saved_records(self):
-        pack = Pack.objects.create()
-        Record.objects.create(text='记录1', pack=pack)
-        Record.objects.create(text='记录2', pack=pack)
+    def test_can_display_only_saved_records_for_that_pack(self):
+        that_pack = Pack.objects.create()
+        Record.objects.create(text='记录1', pack=that_pack)
+        Record.objects.create(text='记录2', pack=that_pack)
+
+        other_pack = Pack.objects.create()
+        Record.objects.create(text='记录3', pack=other_pack)
+        Record.objects.create(text='记录4', pack=other_pack)
 
         response = self.client.get(
-            '/packs/the-only-record-in-the-world/'
+            f'/packs/{that_pack.id}/'
         )
 
         self.assertContains(response, '记录1')
         self.assertContains(response, '记录2')
+        self.assertNotContains(response, '记录3')
+        self.assertNotContains(response, '记录4')
 
 
 class NewPackTest(TestCase):
@@ -78,8 +85,9 @@ class NewPackTest(TestCase):
             data={'record_text': '一条新的成长记录'}
         )
 
+        pack = Pack.objects.first()
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
-            '/packs/the-only-record-in-the-world/'
+            f'/packs/{pack.id}/'
         )
