@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import resolve
 from records.views import home_page
-from records.models import Record
+from records.models import Record, Pack
 
 
 class HomePageTest(TestCase):
@@ -12,15 +12,19 @@ class HomePageTest(TestCase):
         self.assertTemplateUsed(response, 'home.html')
 
 
-class RecordModelTest(TestCase):
+class PackAndRecordModelTest(TestCase):
 
     def test_saving_and_retrieving_records(self):
+        pack = Pack()
+        pack.save()
         first_record = Record()
         first_record.text = '第一条记录'
+        first_record.pack = pack
         first_record.save()
 
         second_record = Record()
         second_record.text = '第二条记录'
+        second_record.pack = pack
         second_record.save()
 
         saved_records = Record.objects.all()
@@ -29,7 +33,9 @@ class RecordModelTest(TestCase):
         first_saved_record = saved_records[0]
         second_saved_record = saved_records[1]
         self.assertEqual(first_saved_record.text, '第一条记录')
+        self.assertEqual(first_saved_record.pack, pack)
         self.assertEqual(second_saved_record.text, '第二条记录')
+        self.assertEqual(second_saved_record.pack, pack)
 
 
 class PackViewTest(TestCase):
@@ -42,8 +48,9 @@ class PackViewTest(TestCase):
         self.assertTemplateUsed(response, 'pack.html')
 
     def test_can_display_all_saved_records(self):
-        Record.objects.create(text='记录1')
-        Record.objects.create(text='记录2')
+        pack = Pack.objects.create()
+        Record.objects.create(text='记录1', pack=pack)
+        Record.objects.create(text='记录2', pack=pack)
 
         response = self.client.get(
             '/packs/the-only-record-in-the-world/'

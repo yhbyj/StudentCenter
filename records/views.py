@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from records.models import Record
+from records.models import Record, Pack
 
 
 def home_page(request):
@@ -14,5 +14,9 @@ def view_pack(request):
 
 
 def new_pack(request):
-    Record.objects.create(text=request.POST['record_text'])
+    pack = Pack.objects.create()
+    Record.objects.create(
+        text=request.POST['record_text'],
+        pack=pack
+    )
     return redirect('/packs/the-only-record-in-the-world/')
