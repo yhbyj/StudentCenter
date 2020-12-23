@@ -121,3 +121,28 @@ class NewVisitorTest(LiveServerTestCase):
 
         # 他们心满意足，出去玩了！
 
+    def test_layout_and_styling(self):
+        # 张三访问首页
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # 他注意到输入框是居中的
+        inputbox = self.browser.find_element_by_id('id_new_record')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=10
+        )
+
+        # 他开始一个新的记录包
+        inputbox.send_keys('测试中！')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_text_in_table(
+            '1、测试中！'
+        )
+        inputbox = self.browser.find_element_by_id('id_new_record')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=10
+        )

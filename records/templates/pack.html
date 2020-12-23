@@ -5,7 +5,9 @@
     <body>
         <h1>你的成长记录</h1>
             <form method="post" action="/packs/{{ pack.id }}/add_item">
-                <input name="record_text" id="id_new_record" placeholder="输入一条成长记录">
+                <p style="text-align: center;">
+                    <input name="record_text" id="id_new_record" placeholder="输入一条成长记录">
+                </p>
                 {% csrf_token %}
             </form>
         <table id="id_table">
