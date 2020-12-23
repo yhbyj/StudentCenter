@@ -22,4 +22,5 @@ urlpatterns = [
     path('', views.home_page, name='home'),
     path('packs/new', views.new_pack, name='new_pack'),
     path('packs/<int:pack_id>/', views.view_pack, name='view_pack'),
+    path('packs/<int:pack_id>/add_item', views.add_item, name='add_item'),
 ]

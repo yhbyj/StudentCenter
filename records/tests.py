@@ -66,6 +66,14 @@ class PackViewTest(TestCase):
         self.assertNotContains(response, '记录3')
         self.assertNotContains(response, '记录4')
 
+    def test_can_pass_a_pack_to_template(self):
+        pack = Pack.objects.create()
+        response = self.client.get(
+            f'/packs/{pack.id}/'
+        )
+
+        self.assertEqual(response.context['pack'], pack)
+
 
 class NewPackTest(TestCase):
 
@@ -86,6 +94,34 @@ class NewPackTest(TestCase):
         )
 
         pack = Pack.objects.first()
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            f'/packs/{pack.id}/'
+        )
+
+
+class NewRecordTest(TestCase):
+
+    def test_can_save_a_POST_request_to_an_existing_pack(self):
+        pack = Pack.objects.create()
+        self.client.post(
+            f'/packs/{pack.id}/add_item',
+            data={'record_text': '一条新的成长记录'}
+        )
+
+        self.assertEqual(Record.objects.count(), 1)
+        record = Record.objects.first()
+        self.assertEqual(record.pack, pack)
+        self.assertEqual(record.text, '一条新的成长记录')
+
+    def test_can_redirect_to_pack_view(self):
+        pack = Pack.objects.create()
+        response = self.client.post(
+            f'/packs/{pack.id}/add_item',
+            data={'record_text': '一条新的成长记录'}
+        )
+
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,

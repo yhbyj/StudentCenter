@@ -4,12 +4,12 @@
     </head>
     <body>
         <h1>你的成长记录</h1>
-            <form method="post" action="/packs/new">
+            <form method="post" action="/packs/{{ pack.id }}/add_item">
                 <input name="record_text" id="id_new_record" placeholder="输入一条成长记录">
                 {% csrf_token %}
             </form>
         <table id="id_table">
-            {% for record in records %}
+            {% for record in pack.record_set.all %}
                 <tr><td>{{ forloop.counter }}、{{ record.text }}</td></tr>
             {% endfor %}
         </table>
