@@ -5,7 +5,7 @@
 {% block form_action %}/packs/{{ pack.id }}/add_item{% endblock %}
 
 {% block table %}
-  <table id="id_table">
+  <table id="id_table" class="table">
         {% for record in pack.record_set.all %}
             <tr><td>{{ forloop.counter }}、{{ record.text }}</td></tr>
         {% endfor %}
