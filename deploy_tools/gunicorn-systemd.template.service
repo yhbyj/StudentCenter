@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn server for DOMAIN
+
+[Service]
+Restart=on-failure
+User=dyez221
+WorkingDirectory=/home/dyez221/sites/DOMAIN
+EnvironmentFile=/home/dyez221/sites/DOMAIN/.env
+
+ExecStart=/home/dyez221/sites/DOMAIN/virtualenv/bin/gunicorn \
+    --bind unix:/tmp/DOMAIN.socket \
+    student_center.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
