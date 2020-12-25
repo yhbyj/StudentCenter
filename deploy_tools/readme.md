@@ -1,16 +1,5 @@
 自动化配置服务器和部署WEB服务
 =======================
-
-Windows:
-
-    set DOMAIN=records-staging.dyez.internal
-    set USERNAME=dyez221
-    
-Linux:
-
-    export DOMAIN=records-staging.dyez.internal
-    export USERNAME=dyez221
-    export REPO_URL=https://gitee.com/zjdyez/StudentCenter.git
     
 ##一、自动化的启动
 
@@ -18,6 +7,8 @@ Linux:
 
     pip install fabric3 -i https://mirrors.aliyun.com/pypi/simple
     cd deploy_tools
+    set DOMAIN=records-staging.dyez.internal
+    set USERNAME=dyez221
     fab deploy:host=%USERNAME%@%DOMAIN%
 
 ##二、自动化运行步骤的手动方式解析
@@ -29,18 +20,29 @@ Linux:
     sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt update
     sudo apt install python3-venv nginx
+    
 
-### （二）、获取代码，安装相应的 python 包，并准备静态文件和数据库
+### （二）、在服务器上，获取代码，安装相应的 python 包，并准备静态文件和数据库
 
+    export DOMAIN=records-staging.dyez.internal
     mkdir -p ~/sites/$DOMAIN
     cd ~/sites/$DOMAIN
     python3 -m venv virtualenv
-    git clone $REPO_URL .
+    git clone https://gitee.com/zjdyez/StudentCenter.git .
     ./virtualenv/bin/pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
     ./virtualenv/bin/python manage.py collectstatic --noinput
     ./virtualenv/bin/python manage.py migrate --noinput
+    touch .env
+    echo DJANGO_DEBUG_FALSE=y >> .env
+    echo DOMAIN=$DOMAIN >> .env
+    echo DJANGO_SECRET_KEY=$(
+        python3 -c"import random; print(''.join(random.SystemRandom().
+        choices('abcdefghijklmnopqrstuvwxyz0123456789', k=50)))"
+        ) >> .env
+    unset DJANGO_SECRET_KEY DJANGO_DEBUG_FALSE DOMAIN
+    set -a; source .env; set +a
 
-### （三）、配置 Nginx 的虚拟主机
+### （三）、在服务器上，配置 Nginx 的虚拟主机
 
     cd ~/sites/$DOMAIN
     cat ./deploy_tools/nginx.template.conf \
@@ -50,8 +52,9 @@ Linux:
     readlink -f /etc/nginx/sites-enabled/$DOMAIN
     sudo rm /etc/nginx/sites-enabled/default
     sudo systemctl start nginx
+    sudo systemctl reload nginx
 
-### （四）配置 gunicorn
+### （四）在服务器上，配置 gunicorn
 
     cd ~/sites/$DOMAIN
     cat ./deploy_tools/gunicorn-systemd.template.service \
@@ -60,6 +63,7 @@ Linux:
     sudo systemctl daemon-reload
     sudo systemctl enable gunicorn-$DOMAIN
     sudo systemctl start gunicorn-$DOMAIN
+    sudo journalctl -u gunicorn-$DOMAIN
          
 ##三、知识点
 
