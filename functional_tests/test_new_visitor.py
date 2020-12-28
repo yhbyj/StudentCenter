@@ -130,7 +130,7 @@ class CSSTest(FunctionalTest):
 
 class InputValidationTest(FunctionalTest):
 
-    def test_cannot_add_empty_record(self):
+    def test_cannot_add_empty_records(self):
         # 张三访问首页时，偶然提交了空的记录。
         self.browser.get(self.live_server_url)
         self.browser.find_element_by_id('id_new_record').send_keys(Keys.ENTER)

@@ -72,6 +72,25 @@ class NewPackTest(TestCase):
             f'/packs/{pack.id}/'
         )
 
+    def test_can_pass_validation_errors(self):
+        response = self.client.post(
+            '/packs/new',
+            data={'record_text': ''}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+        self.assertContains(response, '你不能提交一条空的记录！')
+
+    def test_must_not_save_empty_records(self):
+        response = self.client.post(
+            '/packs/new',
+            data={'record_text': ''}
+        )
+
+        self.assertEqual(Pack.objects.count(), 0)
+        self.assertEqual(Record.objects.count(), 0)
+
 
 class NewRecordTest(TestCase):
 

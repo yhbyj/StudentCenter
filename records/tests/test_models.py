@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from records.models import Pack, Record
@@ -27,3 +28,12 @@ class PackAndRecordModelTest(TestCase):
         self.assertEqual(first_saved_record.pack, pack)
         self.assertEqual(second_saved_record.text, '第二条记录')
         self.assertEqual(second_saved_record.pack, pack)
+
+    def test_cannot_save_empty_records(self):
+        pack = Pack.objects.create()
+        record = Record(pack=pack, text='')
+        with self.assertRaises(ValidationError):
+            record.save()
+            record.full_clean()
+
+
