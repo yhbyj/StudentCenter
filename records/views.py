@@ -11,7 +11,12 @@ def home_page(request):
 
 def view_pack(request, pack_id):
     pack = Pack.objects.get(id=pack_id)
-    records = Record.objects.filter(pack=pack)
+    if request.method == 'POST':
+        Record.objects.create(
+            text=request.POST['record_text'],
+            pack=pack
+        )
+        return redirect(f'/packs/{pack.id}/')
     return render(
         request,
         'pack.html',
@@ -37,11 +42,3 @@ def new_pack(request):
         )
     return redirect(f'/packs/{pack.id}/')
 
-
-def add_item(request, pack_id):
-    pack = Pack.objects.get(id=pack_id)
-    Record.objects.create(
-        text=request.POST['record_text'],
-        pack=pack
-    )
-    return redirect(f'/packs/{pack.id}/')

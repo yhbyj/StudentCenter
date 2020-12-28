@@ -97,7 +97,7 @@ class NewRecordTest(TestCase):
     def test_can_save_a_POST_request_to_an_existing_pack(self):
         pack = Pack.objects.create()
         self.client.post(
-            f'/packs/{pack.id}/add_item',
+            f'/packs/{pack.id}/',
             data={'record_text': '一条新的成长记录'}
         )
 
@@ -109,7 +109,7 @@ class NewRecordTest(TestCase):
     def test_can_redirect_to_pack_view(self):
         pack = Pack.objects.create()
         response = self.client.post(
-            f'/packs/{pack.id}/add_item',
+            f'/packs/{pack.id}/',
             data={'record_text': '一条新的成长记录'}
         )
 

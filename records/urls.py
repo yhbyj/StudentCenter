@@ -20,5 +20,4 @@ from records import views
 urlpatterns = [
     path('new', views.new_pack, name='new_pack'),
     path('<int:pack_id>/', views.view_pack, name='view_pack'),
-    path('<int:pack_id>/add_item', views.add_item, name='add_item'),
 ]
