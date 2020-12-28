@@ -4,3 +4,6 @@ from .test_views import (
 from .test_models import (
     PackAndRecordModelTest,
 )
+from .test_forms import (
+    RecordFormTest,
+)
