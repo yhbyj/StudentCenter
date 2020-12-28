@@ -36,4 +36,10 @@ class PackAndRecordModelTest(TestCase):
             record.save()
             record.full_clean()
 
+    def test_get_absolute_url(self):
+        pack = Pack.objects.create()
+        self.assertEqual(
+            pack.get_absolute_url(),
+            f'/packs/{pack.id}/'
+        )
 

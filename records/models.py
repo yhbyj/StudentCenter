@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Record(models.Model):
@@ -11,4 +12,6 @@ class Record(models.Model):
 
 
 class Pack(models.Model):
-    pass
+
+    def get_absolute_url(self):
+        return reverse('view_pack', args=[self.id])

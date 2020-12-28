@@ -20,7 +20,7 @@ def view_pack(request, pack_id):
             )
             record.full_clean()
             record.save()
-            return redirect(f'/packs/{pack.id}/')
+            return redirect(pack)
         except ValidationError:
             error = '你不能提交一条空的记录！'
     return render(
@@ -46,5 +46,5 @@ def new_pack(request):
             'home.html',
             {'error': '你不能提交一条空的记录！'}
         )
-    return redirect(f'/packs/{pack.id}/')
+    return redirect(pack)
 
