@@ -1,4 +1,4 @@
 from .base import FunctionalTest
-from .new_visitor_tests import (
+from .test_new_visitor import (
     InteractionTest, CSSTest, InputValidationTest,
 )
