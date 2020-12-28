@@ -1,40 +1,12 @@
-import os
-import time
 from unittest import skip
 
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
-
 from selenium.webdriver.common.keys import Keys
 
-# 最大等待时间10秒
-MAX_WAIT = 10
+from . import FunctionalTest
 
 
-class NewVisitorTest(StaticLiveServerTestCase):
-
-    def setUp(self) -> None:
-        self.browser = webdriver.Firefox()
-        staging_server = os.environ.get('STAGING_SERVER')
-        if staging_server:
-            self.live_server_url = 'http://' + staging_server
-
-    def tearDown(self) -> None:
-        self.browser.quit()
-
-    def wait_for_row_text_in_table(self, row_text):
-        start_time = time.time()
-        while True:
-            try:
-                table = self.browser.find_element_by_id('id_table')
-                rows = self.browser.find_elements_by_tag_name('tr')
-                self.assertIn(row_text, [row.text for row in rows])
-                return
-            except(AssertionError, WebDriverException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
+class InteractionTest(FunctionalTest):
 
     def test_can_start_a_pack_of_records_for_one_user(self):
         # 张三（San Zhang）听说一个记录成长经历的应用。
@@ -126,6 +98,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
         # 他们心满意足，出去玩了！
 
+
+class CSSTest(FunctionalTest):
     @skip
     def test_layout_and_styling(self):
         # 张三访问首页
@@ -152,3 +126,12 @@ class NewVisitorTest(StaticLiveServerTestCase):
             512,
             delta=10
         )
+
+
+class InputValidationTest(FunctionalTest):
+
+    def test_cannot_add_empty_record(self):
+        self.fail('测试通过！')
+
+
+
