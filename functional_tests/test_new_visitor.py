@@ -143,12 +143,35 @@ class InputValidationTest(FunctionalTest):
             )
         )
         # 他试着输入一些内容，工作正常，错误消失
+        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_text_in_table(
+            '1、早读时，因为声音响亮，得到老师的表扬。'
+        )
 
         # 他故意再次输入空的记录
+        self.browser.find_element_by_id('id_new_record').send_keys(Keys.ENTER)
 
         # 在pack页，他再次收到相同的错误提示
+        self.wait_for(
+            lambda: self.assertEqual(
+                self.browser.find_element_by_css_selector('.has-error').text,
+                '你不能提交一条空的记录！'
+            )
+        )
 
         # 他再次试着输入一些内容
+        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox.send_keys('中午读写唱时，因为迟到，受到班主任的批评。')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_text_in_table(
+            '1、早读时，因为声音响亮，得到老师的表扬。'
+        )
+        self.wait_for_row_text_in_table(
+            '2、中午读写唱时，因为迟到，受到班主任的批评。'
+        )
+
         self.fail('测试通过！')
 
 
