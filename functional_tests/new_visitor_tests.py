@@ -131,6 +131,24 @@ class CSSTest(FunctionalTest):
 class InputValidationTest(FunctionalTest):
 
     def test_cannot_add_empty_record(self):
+        # 张三访问首页时，偶然提交了空的记录。
+        self.browser.get(self.live_server_url)
+        self.browser.find_element_by_id('id_new_record').send_keys(Keys.ENTER)
+
+        # 首页刷新后，出现一个错误提示“你不能提交一条空的记录！”
+        self.wait_for(
+            lambda: self.assertEqual(
+                self.browser.find_element_by_css_selector('.has-error').text,
+                '你不能提交一条空的记录！'
+            )
+        )
+        # 他试着输入一些内容，工作正常，错误消失
+
+        # 他故意再次输入空的记录
+
+        # 在pack页，他再次收到相同的错误提示
+
+        # 他再次试着输入一些内容
         self.fail('测试通过！')
 
 
