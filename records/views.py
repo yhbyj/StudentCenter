@@ -11,16 +11,22 @@ def home_page(request):
 
 def view_pack(request, pack_id):
     pack = Pack.objects.get(id=pack_id)
+    error = None
     if request.method == 'POST':
-        Record.objects.create(
-            text=request.POST['record_text'],
-            pack=pack
-        )
-        return redirect(f'/packs/{pack.id}/')
+        try:
+            record = Record(
+                text=request.POST['record_text'],
+                pack=pack
+            )
+            record.full_clean()
+            record.save()
+            return redirect(f'/packs/{pack.id}/')
+        except ValidationError:
+            error = '你不能提交一条空的记录！'
     return render(
         request,
         'pack.html',
-        {'pack': pack}
+        {'pack': pack, 'error': error}
     )
 
 

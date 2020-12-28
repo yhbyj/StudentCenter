@@ -46,6 +46,17 @@ class PackViewTest(TestCase):
 
         self.assertEqual(response.context['pack'], pack)
 
+    def test_can_pass_validation_errors(self):
+        pack = Pack.objects.create()
+        response = self.client.post(
+            f'/packs/{pack.id}/',
+            data={'record_text': ''}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'pack.html')
+        self.assertContains(response, '你不能提交一条空的记录！')
+
 
 class NewPackTest(TestCase):
 
