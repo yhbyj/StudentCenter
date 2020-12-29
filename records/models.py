@@ -11,7 +11,11 @@ class Record(models.Model):
     )
 
     class Meta:
+        ordering = ('id', )
         unique_together = ('pack', 'text')
+
+    def __str__(self):
+        return self.text
 
 
 class Pack(models.Model):

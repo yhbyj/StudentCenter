@@ -62,3 +62,18 @@ class PackAndRecordModelTest(TestCase):
         Record.objects.create(pack=pack1, text='dup')
         record = Record(pack=pack2, text='dup')
         record.full_clean()     # should not raise
+
+    def test_pack_ordering(self):
+        pack = Pack.objects.create()
+        record1 = Record.objects.create(pack=pack, text='记录1')
+        record2 = Record.objects.create(pack=pack, text='记录2')
+        record3 = Record.objects.create(pack=pack, text='记录3')
+
+        self.assertEqual(
+            list(Record.objects.all()),
+            [record1, record2, record3]
+        )
+
+    def test_string_representation(self):
+        record = Record(text='成长记录')
+        self.assertEqual(str(record), '成长记录')

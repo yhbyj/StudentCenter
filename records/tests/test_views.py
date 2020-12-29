@@ -91,6 +91,28 @@ class PackViewTest(TestCase):
         self.assertTemplateUsed(response, 'pack.html')
         self.assertContains(response, '你已经提交过此成长记录！')
 
+    def test_can_get_ordered_records(self):
+        pack = Pack.objects.create()
+        new_records = []
+        for i in range(3):
+            record = Record.objects.create(
+                pack=pack,
+                text=f'第{i+1}条成长记录'
+            )
+            new_records.append(record)
+
+        response = self.client.get(
+            f'/packs/{pack.id}/'
+        )
+        pack_records = response.context['pack'].record_set.all()
+
+        self.assertEqual(len(new_records), len(pack_records))
+        for i in range(len(pack_records)):
+            self.assertEqual(
+                new_records[i].text,
+                pack_records[i].text
+            )
+
 
 class NewPackTest(TestCase):
 
