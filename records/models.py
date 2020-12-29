@@ -10,6 +10,9 @@ class Record(models.Model):
         default=None
     )
 
+    class Meta:
+        unique_together = ('pack', 'text')
+
 
 class Pack(models.Model):
 

@@ -56,7 +56,7 @@ class PackViewTest(TestCase):
 
         self.assertEqual(response.context['pack'], pack)
 
-    def test_can_pass_validation_errors(self):
+    def test_can_pass_input_validation_errors(self):
         pack = Pack.objects.create()
         response = self.client.post(
             f'/packs/{pack.id}/',
@@ -78,6 +78,18 @@ class PackViewTest(TestCase):
             RecordForm
         )
         self.assertContains(response, 'name="text"')
+
+    def test_can_pass_duplicate_records_validation_errors(self):
+        pack = Pack.objects.create()
+        Record.objects.create(pack=pack, text='dup')
+        response = self.client.post(
+            f'/packs/{pack.id}/',
+            data={'text': 'dup'}
+        )
+
+        self.assertEqual(Record.objects.count(), 1)
+        self.assertTemplateUsed(response, 'pack.html')
+        self.assertContains(response, '你已经提交过此成长记录！')
 
 
 class NewPackTest(TestCase):

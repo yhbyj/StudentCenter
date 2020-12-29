@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from records.forms import RecordForm, EMPTY_RECORD_ERROR
+from records.forms import RecordForm, EMPTY_RECORD_ERROR, ExistingRecordForm
 from records.models import Record, Pack
 
 
@@ -16,11 +16,11 @@ def home_page(request):
 
 def view_pack(request, pack_id):
     pack = Pack.objects.get(id=pack_id)
-    form = RecordForm()
+    form = ExistingRecordForm(for_pack=pack)
     if request.method == 'POST':
-        form = RecordForm(data=request.POST)
+        form = ExistingRecordForm(for_pack=pack, data=request.POST)
         if form.is_valid():
-            form.save(for_pack=pack)
+            form.save()
             return redirect(pack)
     return render(
         request,

@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import TestCase
 
 from records.models import Pack, Record
@@ -43,4 +44,21 @@ class PackAndRecordModelTest(TestCase):
             f'/packs/{pack.id}/'
         )
 
+    def test_cannot_save_duplicate_records(self):
+        pack = Pack.objects.create()
+        Record.objects.create(text='dup', pack=pack)
+        # with self.assertRaises(ValidationError):
+        # IntegrityError 错误， 而不是 ValidationError 错误
+        with self.assertRaises(IntegrityError):
+            dup_record = Record(text='dup', pack=pack)
+            # dup_record.full_clean()
+            # Django 把 unique_together 约束添加到数据库中，而不是应用层
+            # 所以要测 save 方法
+            dup_record.save()
 
+    def test_can_save_same_record_to_diffrent_pack(self):
+        pack1 = Pack.objects.create()
+        pack2 = Pack.objects.create()
+        Record.objects.create(pack=pack1, text='dup')
+        record = Record(pack=pack2, text='dup')
+        record.full_clean()     # should not raise
