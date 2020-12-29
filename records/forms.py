@@ -2,7 +2,7 @@ from django import forms
 
 from records.models import Record
 
-EMPTY_RECORD_ERROR = '你不能输入一条空的记录！'
+EMPTY_RECORD_ERROR = '你不能提交一条空的记录！'
 
 
 class RecordForm(forms.models.ModelForm):

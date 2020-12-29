@@ -44,3 +44,6 @@ class FunctionalTest(StaticLiveServerTestCase):
     def wait_for(self, fn):
         return fn()
 
+    def get_record_input_element(self):
+        return self.browser.find_element_by_id('id_text')
+

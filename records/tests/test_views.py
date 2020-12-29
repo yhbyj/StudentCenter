@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from records.forms import RecordForm, EMPTY_RECORD_ERROR
 from records.models import Pack, Record
 
 
@@ -7,7 +8,16 @@ class HomePageTest(TestCase):
 
     def test_can_use_home_template(self):
         response = self.client.get('/')
+
         self.assertTemplateUsed(response, 'home.html')
+
+    def test_can_pass_record_form(self):
+        response = self.client.get('/')
+
+        self.assertIsInstance(
+            response.context['form'],
+            RecordForm
+        )
 
 
 class PackViewTest(TestCase):
@@ -50,12 +60,24 @@ class PackViewTest(TestCase):
         pack = Pack.objects.create()
         response = self.client.post(
             f'/packs/{pack.id}/',
-            data={'record_text': ''}
+            data={'text': ''}
         )
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'pack.html')
-        self.assertContains(response, '你不能提交一条空的记录！')
+        self.assertContains(response, EMPTY_RECORD_ERROR)
+
+    def test_can_pass_record_form(self):
+        pack = Pack.objects.create()
+        response = self.client.get(
+            f'/packs/{pack.id}/'
+        )
+
+        self.assertIsInstance(
+            response.context['form'],
+            RecordForm
+        )
+        self.assertContains(response, 'name="text"')
 
 
 class NewPackTest(TestCase):
@@ -63,7 +85,7 @@ class NewPackTest(TestCase):
     def test_can_POST_a_request_and_save_record(self):
         response = self.client.post(
             '/packs/new',
-            data={'record_text': '一条新的成长记录'}
+            data={'text': '一条新的成长记录'}
         )
 
         self.assertEqual(Record.objects.count(), 1)
@@ -73,7 +95,7 @@ class NewPackTest(TestCase):
     def test_can_redirect_after_POST(self):
         response = self.client.post(
             '/packs/new',
-            data={'record_text': '一条新的成长记录'}
+            data={'text': '一条新的成长记录'}
         )
 
         pack = Pack.objects.first()
@@ -83,24 +105,42 @@ class NewPackTest(TestCase):
             f'/packs/{pack.id}/'
         )
 
-    def test_can_pass_validation_errors(self):
-        response = self.client.post(
-            '/packs/new',
-            data={'record_text': ''}
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'home.html')
-        self.assertContains(response, '你不能提交一条空的记录！')
-
     def test_must_not_save_empty_records(self):
         response = self.client.post(
             '/packs/new',
-            data={'record_text': ''}
+            data={'text': ''}
         )
 
         self.assertEqual(Pack.objects.count(), 0)
         self.assertEqual(Record.objects.count(), 0)
+
+    def test_can_use_home_template_when_record_is_invalid(self):
+        response = self.client.post(
+            '/packs/new',
+            data={'text': ''}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+
+    def test_can_pass_validation_errors_when_record_is_invalid(self):
+        response = self.client.post(
+            '/packs/new',
+            data={'text': ''}
+        )
+
+        self.assertContains(response, EMPTY_RECORD_ERROR)
+
+    def test_can_pass_record_form_when_record_is_invalid(self):
+        response = self.client.post(
+            '/packs/new',
+            data={'text': ''}
+        )
+
+        self.assertIsInstance(
+            response.context['form'],
+            RecordForm
+        )
 
 
 class NewRecordTest(TestCase):
@@ -109,7 +149,7 @@ class NewRecordTest(TestCase):
         pack = Pack.objects.create()
         self.client.post(
             f'/packs/{pack.id}/',
-            data={'record_text': '一条新的成长记录'}
+            data={'text': '一条新的成长记录'}
         )
 
         self.assertEqual(Record.objects.count(), 1)
@@ -121,7 +161,7 @@ class NewRecordTest(TestCase):
         pack = Pack.objects.create()
         response = self.client.post(
             f'/packs/{pack.id}/',
-            data={'record_text': '一条新的成长记录'}
+            data={'text': '一条新的成长记录'}
         )
 
         self.assertEqual(response.status_code, 302)

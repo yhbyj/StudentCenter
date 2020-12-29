@@ -19,7 +19,7 @@ class InteractionTest(FunctionalTest):
         self.assertIn('成长记录', header_text)
 
         # 他被邀请直接输入一条成长记录信息。
-        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox = self.get_record_input_element()
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
             '输入一条成长记录'
@@ -38,7 +38,7 @@ class InteractionTest(FunctionalTest):
         # 他好奇这个网站能不能记住他所输入的记录。
         # 他继续在页面的文本框中输入第二条成长记录：
         # “中午读写唱时，因为迟到，受到班主任的批评。”
-        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox = self.get_record_input_element()
         inputbox.send_keys('中午读写唱时，因为迟到，受到班主任的批评。')
 
         # 当他敲了回车键后，页面再次自动更新，
@@ -56,7 +56,7 @@ class InteractionTest(FunctionalTest):
     def test_multiple_users_can_start_packs_at_different_urls(self):
         # 张三（San Zhang）开始一个新的记录包（集）
         self.browser.get(self.live_server_url)
-        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox = self.get_record_input_element()
         inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
@@ -80,7 +80,7 @@ class InteractionTest(FunctionalTest):
         self.assertNotIn('中午读写唱时，因为迟到，受到班主任的批评。', page_text)
 
         # 李四开始一个新的记录包
-        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox = self.get_record_input_element()
         inputbox.send_keys('晚自修时，我写了2000字的作文，非常开心！')
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
@@ -107,7 +107,7 @@ class CSSTest(FunctionalTest):
         self.browser.set_window_size(1024, 768)
 
         # 他注意到输入框是居中的
-        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox = self.get_record_input_element()
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width'] / 2,
             512,
@@ -120,7 +120,7 @@ class CSSTest(FunctionalTest):
         self.wait_for_row_text_in_table(
             '1、测试中！'
         )
-        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox = self.get_record_input_element()
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width'] / 2,
             512,
@@ -133,7 +133,7 @@ class InputValidationTest(FunctionalTest):
     def test_cannot_add_empty_records(self):
         # 张三访问首页时，偶然提交了空的记录。
         self.browser.get(self.live_server_url)
-        self.browser.find_element_by_id('id_new_record').send_keys(Keys.ENTER)
+        self.get_record_input_element().send_keys(Keys.ENTER)
 
         # 首页刷新后，出现一个错误提示“你不能提交一条空的记录！”
         self.wait_for(
@@ -143,7 +143,7 @@ class InputValidationTest(FunctionalTest):
             )
         )
         # 他试着输入一些内容，工作正常，错误消失
-        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox = self.get_record_input_element()
         inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
@@ -151,7 +151,7 @@ class InputValidationTest(FunctionalTest):
         )
 
         # 他故意再次输入空的记录
-        self.browser.find_element_by_id('id_new_record').send_keys(Keys.ENTER)
+        self.get_record_input_element().send_keys(Keys.ENTER)
 
         # 在pack页，他再次收到相同的错误提示
         self.wait_for(
@@ -162,7 +162,7 @@ class InputValidationTest(FunctionalTest):
         )
 
         # 他再次试着输入一些内容
-        inputbox = self.browser.find_element_by_id('id_new_record')
+        inputbox = self.get_record_input_element()
         inputbox.send_keys('中午读写唱时，因为迟到，受到班主任的批评。')
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
