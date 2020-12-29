@@ -20,10 +20,7 @@ def view_pack(request, pack_id):
     if request.method == 'POST':
         form = RecordForm(data=request.POST)
         if form.is_valid():
-            Record.objects.create(
-                text=request.POST['text'],
-                pack=pack
-            )
+            form.save(for_pack=pack)
             return redirect(pack)
     return render(
         request,
@@ -39,10 +36,7 @@ def new_pack(request):
     form = RecordForm(data=request.POST)
     if form.is_valid():
         pack = Pack.objects.create()
-        Record.objects.create(
-            text=request.POST['text'],
-            pack=pack
-        )
+        form.save(for_pack=pack)
         return redirect(pack)
     else:
         return render(

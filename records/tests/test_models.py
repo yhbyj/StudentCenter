@@ -43,3 +43,4 @@ class PackAndRecordModelTest(TestCase):
             f'/packs/{pack.id}/'
         )
 
+
