@@ -19,18 +19,18 @@ class InteractionTest(FunctionalTest):
         self.assertIn('成长记录', header_text)
 
         # 他被邀请直接输入一条成长记录信息。
-        inputbox = self.get_record_input_element()
+        input_box = self.get_record_input_element()
         self.assertEqual(
-            inputbox.get_attribute('placeholder'),
+            input_box.get_attribute('placeholder'),
             '输入一条成长记录'
         )
 
         # 他在文本框中，输入“早读时，因为声音响亮，得到老师的表扬。”
-        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        input_box.send_keys('早读时，因为声音响亮，得到老师的表扬。')
 
         # 当他敲了回车键后，页面自动更新，页面中出现：
         # “1、早读时，因为声音响亮，得到老师的表扬。”
-        inputbox.send_keys(Keys.ENTER)
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
@@ -38,12 +38,12 @@ class InteractionTest(FunctionalTest):
         # 他好奇这个网站能不能记住他所输入的记录。
         # 他继续在页面的文本框中输入第二条成长记录：
         # “中午读写唱时，因为迟到，受到班主任的批评。”
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('中午读写唱时，因为迟到，受到班主任的批评。')
+        input_box = self.get_record_input_element()
+        input_box.send_keys('中午读写唱时，因为迟到，受到班主任的批评。')
 
         # 当他敲了回车键后，页面再次自动更新，
         # 页面中同时出现两条他输入的带编号的记录。
-        inputbox.send_keys(Keys.ENTER)
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
@@ -56,9 +56,9 @@ class InteractionTest(FunctionalTest):
     def test_multiple_users_can_start_packs_at_different_urls(self):
         # 张三（San Zhang）开始一个新的记录包（集）
         self.browser.get(self.live_server_url)
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.get_record_input_element()
+        input_box.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
@@ -79,9 +79,9 @@ class InteractionTest(FunctionalTest):
         self.assertNotIn('中午读写唱时，因为迟到，受到班主任的批评。', page_text)
 
         # 李四开始一个新的记录包
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('晚自修时，我写了2000字的作文，非常开心！')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.get_record_input_element()
+        input_box.send_keys('晚自修时，我写了2000字的作文，非常开心！')
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、晚自修时，我写了2000字的作文，非常开心！'
         )
@@ -106,22 +106,22 @@ class CSSTest(FunctionalTest):
         self.browser.set_window_size(1024, 768)
 
         # 他注意到输入框是居中的
-        inputbox = self.get_record_input_element()
+        input_box = self.get_record_input_element()
         self.assertAlmostEqual(
-            inputbox.location['x'] + inputbox.size['width'] / 2,
+            input_box.location['x'] + input_box.size['width'] / 2,
             512,
             delta=10
         )
 
         # 他开始一个新的记录包
-        inputbox.send_keys('测试中！')
-        inputbox.send_keys(Keys.ENTER)
+        input_box.send_keys('测试中！')
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、测试中！'
         )
-        inputbox = self.get_record_input_element()
+        input_box = self.get_record_input_element()
         self.assertAlmostEqual(
-            inputbox.location['x'] + inputbox.size['width'] / 2,
+            input_box.location['x'] + input_box.size['width'] / 2,
             512,
             delta=10
         )
@@ -141,8 +141,8 @@ class InputValidationTest(FunctionalTest):
             )
         )
         # 他试着输入一些内容
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        input_box = self.get_record_input_element()
+        input_box.send_keys('早读时，因为声音响亮，得到老师的表扬。')
         self.wait_for(
             lambda: self.browser.find_element_by_css_selector(
                 '#id_text:valid'
@@ -150,7 +150,7 @@ class InputValidationTest(FunctionalTest):
         )
 
         # 成功提交了记录
-        inputbox.send_keys(Keys.ENTER)
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
@@ -164,14 +164,14 @@ class InputValidationTest(FunctionalTest):
         )
 
         # 他再次试着输入一些内容
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('中午读写唱时，因为迟到，受到班主任的批评。')
+        input_box = self.get_record_input_element()
+        input_box.send_keys('中午读写唱时，因为迟到，受到班主任的批评。')
         self.wait_for(
             lambda: self.browser.find_element_by_css_selector(
                 '#id_text:valid'
             )
         )
-        inputbox.send_keys(Keys.ENTER)
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
@@ -182,17 +182,17 @@ class InputValidationTest(FunctionalTest):
     def test_cannot_submit_duplicate_records(self):
         # 张三访问首页时，输入和提交了一条成长记录。
         self.browser.get(self.live_server_url)
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.get_record_input_element()
+        input_box.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
 
         # 他偶然输入和提交了和上一条一样的成长记录
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.get_record_input_element()
+        input_box.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        input_box.send_keys(Keys.ENTER)
 
         # 他看到一条错误信息
         self.wait_for(
@@ -205,9 +205,9 @@ class InputValidationTest(FunctionalTest):
     def test_different_users_can_submit_same_record(self):
         # 张三访问首页时，输入和提交了一条成长记录。
         self.browser.get(self.live_server_url)
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.get_record_input_element()
+        input_box.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
@@ -219,12 +219,14 @@ class InputValidationTest(FunctionalTest):
 
         # 李四访问首页时，输入和提交了一条和张三一样的成长记录。
         self.browser.get(self.live_server_url)
-        inputbox = self.get_record_input_element()
-        inputbox.send_keys('早读时，因为声音响亮，得到老师的表扬。')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.get_record_input_element()
+        input_box.send_keys('早读时，因为声音响亮，得到老师的表扬。')
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_text_in_table(
             '1、早读时，因为声音响亮，得到老师的表扬。'
         )
+
+
 
 
 
