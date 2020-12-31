@@ -21,9 +21,9 @@ class AuthenticationTest(FunctionalTest):
         # 提交之后，他发现一条包含当前电子邮箱地址的提示信息
         input_box.send_keys(Keys.ENTER)
         self.wait_for(
-            lambda: self.assertContains(
-                self.browser.find_element_by_tag_name('body').text,
-                'zhangsan@example.com'
+            lambda: self.assertIn(
+                'zhangsan@example.com',
+                self.browser.find_element_by_tag_name('body').text
             )
         )
 
