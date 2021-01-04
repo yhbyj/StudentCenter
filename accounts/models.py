@@ -3,7 +3,7 @@ from django.db import models
 
 class MyUser(models.Model):
     email = models.EmailField(
-        unique=True
+        primary_key=True
     )
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'email'

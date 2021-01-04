@@ -1,8 +1,8 @@
 from .test_views import (
-    HomePageTest,
+    NewAccountTest,
 )
 from .test_models import (
-    UserModelTest,
+    MyUserModelTest,
 )
 from .test_forms import (
     RecordFormTest,
