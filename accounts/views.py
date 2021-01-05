@@ -1,12 +1,25 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import render
 
 from accounts.models import MyUser
+from functional_tests.test_aaa import SUBJECT
 
 
 def new_account(request):
-    user = MyUser(email=request.POST['email'])
+    email = request.POST['email']
+    user = MyUser(email=email)
     user.save()
+    # print(type(send_mail))
+    # 邮件发送方必须和登录用户一致
+    from_email = settings.EMAIL_HOST_USER
+    send_mail(
+        subject=SUBJECT,
+        message='欢迎您！',
+        from_email=from_email,
+        recipient_list=[email]
+    )
     response = HttpResponse(user.email)
     return response
     # form = RecordForm(data=request.POST)

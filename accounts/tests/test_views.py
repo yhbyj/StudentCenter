@@ -1,4 +1,5 @@
-from django.core import mail
+from unittest.mock import patch
+
 from django.test import TestCase
 
 from accounts.models import MyUser
@@ -25,5 +26,18 @@ class NewAccountTest(TestCase):
         user = MyUser.objects.first()
         self.assertEqual(user.email, TEST_EMAIL)
 
-    def test_can_send_an_email_with_log_in_link(self):
-        pass
+    @patch('accounts.views.send_mail')
+    def test_can_send_an_email_with_log_in_link(self, mock_send_mail):
+        response = self.client.post(
+            '/accounts/new',
+            data={'email': TEST_EMAIL}
+        )
+
+        self.assertEqual(mock_send_mail.called, True)
+        mock_send_mail.assert_called_with(
+            subject=SUBJECT,
+            message='欢迎您！',
+            from_email='mock@example.com',
+            recipient_list=[TEST_EMAIL]
+        )
+

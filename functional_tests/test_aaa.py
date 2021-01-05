@@ -43,6 +43,14 @@ class AuthenticationTest(FunctionalTest):
 
         # 提交之后，他根据返回的提示信息，
         # 检查自己的电子邮箱，发现一条新收到的信息
+        self.wait_for(
+            lambda: self.assertIn(
+                TEST_EMAIL,
+                self.browser.find_element_by_tag_name('body').text
+            )
+        )
+        # 注意：一定要在看到返回的提示信息后，再检查自己的电子邮箱
+        # 否则会出现“IndexError: list index out of range” 的错误
         email = mail.outbox[0]
         self.assertIn(TEST_EMAIL, email.to)
         self.assertEqual(email.subject, SUBJECT)
