@@ -51,6 +51,9 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'accounts.MyUser'
+AUTHENTICATION_BACKENDS = [
+    'accounts.authentication.MyTokenAuthenticationBackend',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -1,7 +1,9 @@
 from django.conf import settings
+from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
 from accounts.models import MyUser, Token
 from functional_tests.test_aaa import SUBJECT
@@ -16,15 +18,6 @@ def new_account(request):
     # django.db.utils.IntegrityError:
     # UNIQUE constraint failed: accounts_myuser.email
     user.save()
-    # print(type(send_mail))
-    # 邮件发送方必须和登录用户一致
-    from_email = settings.EMAIL_HOST_USER
-    send_mail(
-        subject=SUBJECT,
-        message='欢迎您！',
-        from_email=from_email,
-        recipient_list=[email]
-    )
     response = HttpResponse(user.email)
     return response
 
@@ -34,12 +27,21 @@ def new_token(request):
     token = Token.objects.create(email=email)
     # 邮件发送方必须和登录用户一致
     from_email = settings.EMAIL_HOST_USER
+    url = request.build_absolute_uri(
+        reverse('token_uuid', kwargs={'uuid': str(token.uuid)})
+    )
+    message = f'请用下面的链接登录：\n{url}'
     send_mail(
         subject=SUBJECT,
-        message='欢迎您！',
+        message=message,
         from_email=from_email,
         recipient_list=[email]
     )
     response = HttpResponse(token.email)
     return response
 
+
+def token_uuid(request, uuid):
+    # user = authenticate(uuid=uuid)
+    # print(user)
+    return redirect('/')

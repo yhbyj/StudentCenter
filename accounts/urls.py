@@ -19,4 +19,5 @@ from accounts import views
 
 urlpatterns = [
     path('tokens/new', views.new_token, name='new_token'),
+    path('tokens/<uuid>', views.token_uuid, name='token_uuid'),
 ]

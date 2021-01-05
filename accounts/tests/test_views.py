@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+import uuid
 from django.conf import settings
 from django.test import TestCase
 
@@ -34,12 +35,39 @@ class NewTokenViewTest(TestCase):
             data={'email': TEST_EMAIL}
         )
 
-        self.assertEqual(mock_send_mail.called, True)
+        token = Token.objects.first()
+        kwargs = tuple(mock_send_mail.call_args)[1]
         from_email = settings.EMAIL_HOST_USER
-        mock_send_mail.assert_called_with(
-            subject=SUBJECT,
-            message='欢迎您！',
-            from_email=from_email,
-            recipient_list=[TEST_EMAIL]
+        expected_url = f'http://testserver/accounts/tokens/{token.uuid}'
+
+        self.assertEqual(mock_send_mail.called, True)
+        self.assertEqual(SUBJECT, kwargs['subject'])
+        self.assertEqual(from_email, kwargs['from_email'])
+        self.assertIn(expected_url, kwargs['message'])
+        self.assertIn(TEST_EMAIL, kwargs['recipient_list'])
+
+
+class TokenUUIDViewTest(TestCase):
+
+    def test_can_redirect_to_home_page(self):
+        response = self.client.get(
+            f'/accounts/tokens/{uuid.uuid4()}'
         )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            f'/'
+        )
+
+    def test_can_log_in_by_token(self):
+        # token = Token.objects.create(email=TEST_EMAIL)
+        # response = self.client.get(
+        #     f'/accounts/tokens/{token.uuid}'
+        # )
+        #
+        # user = MyUser.objects.get(email=token.email)
+        #
+        # self.assertIsInstance(response.context['user'], user)
+        pass
 
