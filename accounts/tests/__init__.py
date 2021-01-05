@@ -1,5 +1,5 @@
 from .test_views import (
-    NewAccountTest,
+    NewTokenViewTest,
 )
 from .test_models import (
     MyUserModelTest,

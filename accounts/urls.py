@@ -18,5 +18,5 @@ from django.urls import path
 from accounts import views
 
 urlpatterns = [
-    path('new', views.new_account, name='new_account'),
+    path('tokens/new', views.new_token, name='new_token'),
 ]
