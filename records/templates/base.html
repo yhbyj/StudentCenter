@@ -15,12 +15,18 @@
             <nav class="navbar navbar-default" role="navigation">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="/">首页</a>
-                    {{ user }}
-                    <form class="navbar-form navbar-right" method="post" action="{% url 'new_token' %}">
-                        <input class="form-control" name="email"
-                               type="text" placeholder="请输入您的电子邮箱地址">
-                        {% csrf_token %}
-                    </form>
+                    {% if user.email %}
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="navbar-text">{{ user.email }}已登录</li>
+                            <li><a href="#">登出</a></li>
+                        </ul>
+                    {% else %}
+                        <form class="navbar-form navbar-right" method="post" action="{% url 'new_token' %}">
+                            <input class="form-control" name="email"
+                                   type="text" placeholder="请输入您的电子邮箱地址">
+                            {% csrf_token %}
+                        </form>
+                    {% endif %}
                 </div>
             </nav>
 
