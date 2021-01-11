@@ -1,4 +1,5 @@
-from unittest.mock import patch
+from unittest import skip
+from unittest.mock import patch, call
 
 import uuid
 from django.conf import settings
@@ -38,7 +39,8 @@ class NewTokenViewTest(TestCase):
         token = Token.objects.first()
         kwargs = tuple(mock_send_mail.call_args)[1]
         from_email = settings.EMAIL_HOST_USER
-        expected_url = f'http://testserver/accounts/tokens/{token.uuid}'
+        _uuid = str(token.uuid)
+        expected_url = f'http://testserver/accounts/tokens/{_uuid}'
 
         self.assertEqual(mock_send_mail.called, True)
         self.assertEqual(SUBJECT, kwargs['subject'])
@@ -47,11 +49,13 @@ class NewTokenViewTest(TestCase):
         self.assertIn(TEST_EMAIL, kwargs['recipient_list'])
 
 
+@patch('accounts.views.auth')
 class TokenUUIDViewTest(TestCase):
 
-    def test_can_redirect_to_home_page(self):
+    def test_can_redirect_to_home_page(self, mock_auth):
+        _uuid = str(uuid.uuid4())
         response = self.client.get(
-            f'/accounts/tokens/{uuid.uuid4()}'
+            f'/accounts/tokens/{_uuid}'
         )
 
         self.assertEqual(response.status_code, 302)
@@ -60,14 +64,43 @@ class TokenUUIDViewTest(TestCase):
             f'/'
         )
 
-    def test_can_log_in_by_token(self):
-        # token = Token.objects.create(email=TEST_EMAIL)
-        # response = self.client.get(
-        #     f'/accounts/tokens/{token.uuid}'
-        # )
-        #
-        # user = MyUser.objects.get(email=token.email)
-        #
-        # self.assertIsInstance(response.context['user'], user)
-        pass
+    def test_can_authenticate_with_uuid(self, mock_auth):
+        _uuid = str(uuid.uuid4())
+        response = self.client.get(
+            f'/accounts/tokens/{_uuid}'
+        )
+
+        self.assertEqual(
+            mock_auth.authenticate.call_args,
+            call(
+                response.wsgi_request,
+                uuid=_uuid
+            )
+        )
+
+    def test_can_login_with_uuid(self, mock_auth):
+        _uuid = str(uuid.uuid4())
+        response = self.client.get(
+            f'/accounts/tokens/{_uuid}'
+        )
+
+        self.assertEqual(
+            mock_auth.login.call_args,
+            call(
+                response.wsgi_request,
+                mock_auth.authenticate.return_value
+            )
+        )
+
+    def test_cannot_login_when_not_authenticated(self, mock_auth):
+        _uuid = str(uuid.uuid4())
+        mock_auth.authenticate.return_value = None
+        self.client.get(
+            f'/accounts/tokens/{_uuid}'
+        )
+
+        self.assertEqual(
+            mock_auth.login.called,
+            False
+        )
 

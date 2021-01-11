@@ -3,7 +3,7 @@ from accounts.models import Token, MyUser
 
 class MyTokenAuthenticationBackend(object):
 
-    def authenticate(self, request, uuid):
+    def authenticate(self, request, uuid=None):
         try:
             token = Token.objects.get(uuid=uuid)
             return MyUser.objects.get(email=token.email)

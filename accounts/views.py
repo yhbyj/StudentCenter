@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth import authenticate
+from django.contrib import auth
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -42,6 +42,7 @@ def new_token(request):
 
 
 def token_uuid(request, uuid):
-    # user = authenticate(uuid=uuid)
-    # print(user)
+    user = auth.authenticate(request, uuid=uuid)
+    if user:
+        auth.login(request, user)
     return redirect('/')
