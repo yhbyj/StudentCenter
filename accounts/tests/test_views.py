@@ -3,6 +3,7 @@ from unittest.mock import patch, call
 
 import uuid
 from django.conf import settings
+from django.contrib import messages
 from django.test import TestCase
 
 from accounts.models import MyUser, Token
@@ -11,13 +12,17 @@ from functional_tests.test_aaa import SUBJECT, TEST_EMAIL
 
 class NewTokenViewTest(TestCase):
 
-    def test_can_POST_a_request(self):
+    def test_can_redirect_to_home_page(self):
         response = self.client.post(
             '/accounts/tokens/new',
             data={'email': TEST_EMAIL}
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            f'/'
+        )
 
     def test_can_POST_a_request_and_save_a_token(self):
         response = self.client.post(
@@ -47,6 +52,25 @@ class NewTokenViewTest(TestCase):
         self.assertEqual(from_email, kwargs['from_email'])
         self.assertIn(expected_url, kwargs['message'])
         self.assertIn(TEST_EMAIL, kwargs['recipient_list'])
+
+    def test_can_add_success_message(self):
+        response = self.client.post(
+            '/accounts/tokens/new',
+            data={'email': TEST_EMAIL},
+            follow=True
+        )
+
+        message = list(response.context['messages'])[0]
+
+        self.assertEqual(
+            message.tags,
+            messages.DEFAULT_TAGS[messages.SUCCESS]
+        )
+        self.assertEqual(
+            message.message,
+            f'已经向您的电子邮箱：{TEST_EMAIL}，成功发送包含“登录链接”电子邮件，请查收！',
+
+        )
 
 
 @patch('accounts.views.auth')

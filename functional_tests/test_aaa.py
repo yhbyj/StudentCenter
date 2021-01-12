@@ -29,7 +29,7 @@ class AuthenticationTest(FunctionalTest):
         # 提交之后，他发现一条包含当前电子邮箱地址的提示信息
         self.wait_for(
             lambda: self.assertIn(
-                TEST_EMAIL,
+                f'已经向您的电子邮箱：{TEST_EMAIL}，成功发送包含“登录链接”电子邮件，请查收！',
                 self.browser.find_element_by_tag_name('body').text
             )
         )

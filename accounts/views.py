@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -37,8 +37,12 @@ def new_token(request):
         from_email=from_email,
         recipient_list=[email]
     )
+    messages.success(
+        request,
+        f'已经向您的电子邮箱：{email}，成功发送包含“登录链接”电子邮件，请查收！',
+    )
     response = HttpResponse(token.email)
-    return response
+    return redirect('/')
 
 
 def token_uuid(request, uuid):
