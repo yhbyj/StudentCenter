@@ -47,3 +47,4 @@ class FunctionalTest(StaticLiveServerTestCase):
     def get_record_input_element(self):
         return self.browser.find_element_by_id('id_text')
 
+

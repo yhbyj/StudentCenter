@@ -5,3 +5,6 @@ from .test_new_visitor import (
 from .test_aaa import (
     AuthenticationTest,
 )
+from .test_records import (
+    PacksTest,
+)
