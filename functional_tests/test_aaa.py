@@ -80,3 +80,10 @@ class AuthenticationTest(FunctionalTest):
             '.navbar'
         )
         self.assertIn(TEST_EMAIL, navbar.text)
+
+        # 现在，他登出！
+        self.browser.find_element_by_link_text('登出').click()
+        navbar = self.browser.find_element_by_css_selector(
+            '.navbar'
+        )
+        self.assertNotIn(TEST_EMAIL, navbar.text)
