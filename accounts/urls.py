@@ -14,10 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.urls import path
 from accounts import views
 
 urlpatterns = [
     path('tokens/new', views.new_token, name='new_token'),
     path('tokens/<uuid>', views.token_uuid, name='token_uuid'),
+    path('logout', LogoutView.as_view(), name='logout'),
 ]

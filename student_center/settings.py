@@ -141,3 +141,5 @@ EMAIL_PORT = 25
 EMAIL_HOST_USER = 'lizhaijixiao@sina.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
+
+LOGOUT_REDIRECT_URL = '/'
